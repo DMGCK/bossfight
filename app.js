@@ -39,14 +39,15 @@ function updateHealth(char, dmgSource) {
   if (!dmgSource) {
     // console.log('reset success'); 
     charElem.style.width = ((char.health + '%')) // TODO wrong spot for level up stuff
+    debugger
   }
   else
   if (char.health < 0 || char.health == 0) { //overkill clause
     console.log(char); 
-      console.log('got into overkill clause'); 
+    console.log('got into overkill clause', char.id); 
       
+    char.health = 0; //Sets bosses health to 0 if levels up, must be BEFORE levelup is called 
       levelUp(char.id);
-      char.health = 0;
     }
     if (dmgSource.health > 0) {
 
@@ -96,15 +97,17 @@ function levelUp(char) { //NOTE PASS IN A STRING FOR GODS SAKES
   console.log('attempting levelup', char); 
   
   if (char) {
-    allThings[char].name.level++;
-    console.log(allThings[char].name.level, ' levelling up'); 
+    // console.log(allThings[char].name.level, ' levelling up'); 
     
     switch(allThings[char].name) {
       case boss:  
-      console.log('INSIDE BOSS SWITCH STATEMENT', boss.level); 
-      boss.health = allThings.boss.default.health * (2 ** boss.level)
-      
+      allThings[char].name.level++;
+      boss.health = allThings.boss.default.health + (100 * boss.level)
       updateHealth(boss, player); break
+      
+      // console.log('INSIDE BOSS SWITCH STATEMENT', boss.level); 
+      // console.log(boss.health); 
+      //* (2 ** boss.level) LITERALLY WAY TOO EXTREME 
 
       default: console.log('default levelup'); break; 
       
