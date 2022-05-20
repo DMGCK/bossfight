@@ -25,17 +25,30 @@ const bossDefault = {
 
 let player = playerDefault;
 let boss = bossDefault;
+let money = 0;
 
 let allThings = // a little funky
 {player: {default: JSON.parse(JSON.stringify(playerDefault)), name: player}, 
   boss: {default: JSON.parse(JSON.stringify(bossDefault)), name: boss},
 }
 
+function updateMoney() {
+  document.getElementById(player.id+'-money').innerText = money;
+}
 
+function buyLevel(char) {
+  
+  if (money >= char.level ** (1 + (char.level / 10))) {
+    console.log('attempt buy level'); 
+    money -= char.level ** (1 + (char.level / 10))
+    levelUp(char);
+    char.health = char.maxHealth;
+  }
+}
 
 function updateHealth(char, dmgSource) {
 
-  let charElem = document.getElementById(char.healthID);
+  let charElem = document.getElementById(char.id+'-health');
   // console.log(char.health, ' total health @ operation'); 
 
   if (!dmgSource) {
@@ -43,15 +56,21 @@ function updateHealth(char, dmgSource) {
   }
   else
     if (char.health < 0 || char.health == 0) { //overkill clause
-      console.log(char);
-      console.log('got into overkill clause', char.id);
+      // console.log(char);
+      // console.log('got into overkill clause', char.id);
       char.health = 0; //Sets bosses health to 0 if levels up, must be BEFORE levelup is called 
-      levelUp(char.id);
+      console.log(char.id, 'died'); 
+      
+      if (char == boss) {
+        levelUp(char.id);
+      }
     }
     else
   if (dmgSource.health > 0) {
     char.health -= dmgFunc(dmgSource);
-    debugger
+    console.log(char); 
+    
+    // debugger
   }
   charElem.style.width = (((char.health / char.maxHealth)*100) + '%') // healthbar looks broken as above 100 TODO
 }
@@ -68,7 +87,7 @@ function dmgFunc(dmgSource) {
     // console.log('the boss is dealing damage', rand); 
     return Math.ceil((5 * boss.level) * rand)
 
-    case player:return  Math.floor((5 * (player.level * .8)) * rand)
+    case player:return  Math.floor((1 * (player.level * 8)) * rand)
 
     default: return 5
   }
@@ -100,27 +119,39 @@ function levelUp(char) { //NOTE PASS IN A STRING FOR GODS SAKES
     
     switch(allThings[char].name) {
       case boss:  
+        money += 100 * (2 ** 1 + (boss.level / 10))
+        console.log(money); 
+        
+        updateMoney()
+
         allThings[char].name.level++;
+
         boss.maxHealth = allThings.boss.default.health + (100 * boss.level);
         boss.health = allThings.boss.default.health + (100 * boss.level);
-        console.log(boss.health, boss.maxHealth); 
+
+        document.getElementById(boss.id +'-level').innerText = boss.level;
         updateHealth(boss, player); break
         
+        // console.log(boss.health, boss.maxHealth); 
         // console.log('INSIDE BOSS SWITCH STATEMENT', boss.level); 
         //* (2 ** boss.level) LITERALLY WAY TOO EXTREME 
 
-      case player: console.log('player died');
-        player.health = 0;
-        break
+      case player: 
+        player.maxHealth = allThings.player.default.health + (50 * player.level);
+        player.health = allThings.player.default.health + (50 * player.level);
+      
+      break
       
       default: console.log('default levelup'); break; 
       
     }
   }
-
-
+  
+  
   //* (2 ** char.level) boss formula
 }
+
+
 
 
 // NOTE startup

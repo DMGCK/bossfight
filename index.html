@@ -31,7 +31,9 @@
               </div>
 
               <div class="card bg-light text-dark text-center">
-                stats box
+                Money: <span id="player-money">0</span>
+                <div onclick="buyLevel(player)" class="btn-warning btn">Level Up <span id="player-level" ></span></div>
+                <div class="btn btn-success" id="player-heal" onclick="playerHeal()">Heal!</div>
               </div>
 
             </div>
@@ -50,7 +52,9 @@
             </div>
 
             <div class="card bg-light text-dark text-center">
-              stats box
+              <div class="bg-dark fs-3 border border-danger border-3 text-light">Level 
+                <span id="boss-level">1</1>
+              </span></div>
             </div>
 
           </div>
